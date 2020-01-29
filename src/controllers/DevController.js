@@ -1,4 +1,6 @@
 import axios from 'axios';
+import getDevFromRequestBody from '../templates/getDevFromRequestBody.js';
+import getDevFromGithubApi from '../templates/getDevFromGithubApi.js';
 import Dev from '../models/Dev.js';
 
 export const index = async (request, response) => {
@@ -12,40 +14,23 @@ export const index = async (request, response) => {
 
 export const create = async (request, response) => {
   try {
-    const {
-      github_username: githubUsername,
-      techs,
-      latitude,
-      longitude,
-    } = request.body;
-    const apiResponse = await axios.get(`https://api.github.com/users/${githubUsername}`);
+    const devFromRequestBody = getDevFromRequestBody(request.body);
+    const existingDev = !!await Dev.findOne({
+      github_username: devFromRequestBody.githubUsername,
+    });
 
-    const dev = await Dev.findOne({ github_username: githubUsername });
-
-    if (dev) {
+    if (existingDev) {
       return response.status(400).send({ message: 'Dev já existente' });
     }
 
-    const {
-      login,
-      name = login,
-      avatar_url: avatarUrl,
-      bio,
-    } = apiResponse.data;
+    const apiResponse = await axios
+      .get(`https://api.github.com/users/${devFromRequestBody.githubUsername}`);
 
-    const techsArray = techs.split(',').map((tech) => tech.trim());
-    const location = {
-      type: 'Point',
-      coordinates: [longitude, latitude],
-    };
+    const devFromGithubApi = getDevFromGithubApi(apiResponse.data);
 
     const createdDev = await Dev.create({
-      github_username: githubUsername,
-      name,
-      avatar_url: avatarUrl,
-      bio,
-      techs: techsArray,
-      location,
+      ...devFromRequestBody,
+      ...devFromGithubApi,
     });
     return response.json(createdDev);
   } catch (error) {
