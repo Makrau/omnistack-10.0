@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { getDevFromGithubApi, getDevFromRequestBody } from '../templates/Dev.js';
-import Dev from '../models/Dev.js';
+import { Dev, devConnection } from '../models/Dev.js';
 
 export const index = async (request, response) => {
   try {
@@ -14,7 +14,7 @@ export const index = async (request, response) => {
 export const create = async (request, response) => {
   try {
     const devFromRequestBody = getDevFromRequestBody(request.body);
-    const existingDev = !!await Dev.findOne({
+    const existingDev = !!await devConnection.findOne({
       github_username: devFromRequestBody.githubUsername,
     });
 
@@ -33,7 +33,6 @@ export const create = async (request, response) => {
     });
     return response.json(createdDev);
   } catch (error) {
-    console.log(error);
     return response.status(400).send({ message: error.message });
   }
 };

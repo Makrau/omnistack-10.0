@@ -14,7 +14,7 @@ export const getDevFromRequestBody = (bodyRequest) => {
   };
 
   return {
-    github_username: githubUsername, techs: techsArray, location,
+    githubUsername, techs: techsArray, location,
   };
 };
 
@@ -28,7 +28,7 @@ export const getDevFromGithubApi = (apiResponseData) => {
 
   return {
     name,
-    avatar_url: avatarUrl,
+    avatarUrl,
     bio,
   };
 };
