@@ -1,6 +1,5 @@
 import axios from 'axios';
-import getDevFromRequestBody from '../templates/getDevFromRequestBody.js';
-import getDevFromGithubApi from '../templates/getDevFromGithubApi.js';
+import { getDevFromGithubApi, getDevFromRequestBody } from '../templates/Dev.js';
 import Dev from '../models/Dev.js';
 
 export const index = async (request, response) => {
