@@ -4,7 +4,7 @@ import { Dev, devConnection } from '../models/Dev.js';
 
 export const index = async (request, response) => {
   try {
-    const devs = await Dev.find();
+    const devs = await devConnection.find();
     return response.json(devs);
   } catch (error) {
     return response.status(500).send({ message: error.message });
@@ -14,12 +14,9 @@ export const index = async (request, response) => {
 export const create = async (request, response) => {
   try {
     const devFromRequestBody = getDevFromRequestBody(request.body);
-    const existingDev = !!await devConnection.findOne({
-      github_username: devFromRequestBody.githubUsername,
-    });
 
-    if (existingDev) {
-      return response.status(400).send({ message: 'Dev já existente' });
+    if (request.devExists) {
+      return response.status(400).send({ message: 'Dev already exists' });
     }
 
     const apiResponse = await axios

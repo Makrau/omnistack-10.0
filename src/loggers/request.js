@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const requestLogger = (request, response, next) => {
   console.log('');
   console.time('request');
